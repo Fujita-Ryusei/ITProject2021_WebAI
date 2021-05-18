@@ -1,0 +1,14 @@
+{% extends "index.html" %}
+{% block content %}
+<body class="text-center">
+    <h2>現在はPage2にいます</h2>
+    <form action="/page1" method="get">
+      <input type="submit" value='page1に戻る'>
+    </form>
+    <br>
+    <form action="/" method="get">
+        <input type="submit" value='最初に戻る'>
+    </form>
+
+</body>
+{% endblock %}

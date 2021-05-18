@@ -1,0 +1,48 @@
+{% extends "index.html" %}
+{% block content %}
+<body class="text-center">
+    <h1>移動するページを選んでください</h1>
+
+
+    <form action="/page1" method="get">
+        <input type="submit" value='page1に進む'>
+    </form>
+    <br>
+    <form action="/dl" method="get" name = "form01">
+        <input type="button" value='深層学習の結果を見る' onclick="return loading('form01', '/dl', 'GET');">
+    </form>
+    <br>
+    <form action="/login_manager" method="POST" enctype="multipart/form-data">
+        <select name="select">
+            <option value="選択肢1" name = "name">選択肢1</option>
+            <option value="選択肢2" name = "name">選択肢2</option>
+            <option value="選択肢3" name = "name">選択肢3</option>
+        </select>
+        <input type="submit" value="送信">
+    </form>
+
+    <br>
+    <form action="/ml" method="POST" name = "form01">
+        <input type="file" name = "data">
+        <input type="submit" value="機械学習開始">
+    </form>
+    <p>正規化</p>
+    <form action="/load_data" method="POST">
+        <input type="file" name = "data">
+        <input type="submit" value="送信">
+    </form>
+
+    <script> 
+    function loading(formName, url, method){
+
+        var form = document.forms[formName];
+        
+        form.method = method;
+        form.action = url;
+        form.submit();
+        return true;
+    }
+    </script>
+
+</body>
+{% endblock %}

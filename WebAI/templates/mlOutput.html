@@ -1,0 +1,19 @@
+{% extends "index.html" %}
+{% block content %}
+
+<h3>学習結果</h3>
+
+<p>accuracy：{{ accuracy }}</p>
+<!-- <p>loss    ：{{ accuracy[0] }}</p> -->
+
+<script>
+    let accuracy = {{ accuracy }};
+    if(accuracy > 0.9){
+        document.write("精度が90％を超えているので精度がとてもいいモデルですね")
+    }
+</script>
+<p></p>
+<form action="/" method="get">
+    <input type="submit" value='最初に戻る'>
+</form>
+{% endblock %}
