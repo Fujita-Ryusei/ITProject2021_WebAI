@@ -7,9 +7,29 @@ from keras.layers import Dense
 import numpy as np
 from sklearn import model_selection
 from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn import metrics
 from collections import defaultdict
+
+def choose_model(x_train,x_test,y_train,y_test,model):
+        if model == "RandomForestClassifier":
+                return RFC(x_train,x_test,y_train,y_test)
+        elif model == "RandomForestRegressor":
+                return RFR(x_train,x_test,y_train,y_test)
+
+def RFC(x_train,x_test,y_train,y_test):
+        model = RandomForestClassifier()
+        model.fit(x_train,y_train)
+        y_pred = model.predict(x_test)
+        return accuracy_score(y_test,y_pred)
+
+def RFR(x_train,x_test,y_train,y_test):
+        #model = LogisticRegression()
+        model = RandomForestRegressor()
+        model.fit(x_train,y_train)
+        y_pred = model.predict(x_test)
+        return metrics.r2_score(y_test, y_pred)
 
 
 def csv_load(file_name):
@@ -127,7 +147,7 @@ def factorize(data):
 #def ave(data):
 
 
-def titanic(radio_data,target):
+def titanic(radio_data,target,model):
         #ave mode mean standard drop
         data = pd.read_csv("data.csv")
         columns_list = receive_data()[1]
@@ -158,11 +178,9 @@ def titanic(radio_data,target):
         train_data = data.drop(target, axis = 1)
         x_train,x_test,y_train,y_test = model_selection.train_test_split(train_data,target_data,test_size = 0.2)
 
-        model = RandomForestClassifier()
-        model.fit(x_train,y_train)
-        y_pred = model.predict(x_test)
-        #return metrics.r2_score(y_test, y_pred)
-        return accuracy_score(y_test,y_pred)
+        #model = RandomForestClassifier()
+        #model.fit(x_train,y_train)
+        return choose_model(x_train,x_test,y_train,y_test,model)
 
 def titanic_original(data):
         #ave mode mean standard drop
