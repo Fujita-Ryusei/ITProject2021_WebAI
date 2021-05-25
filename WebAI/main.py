@@ -3,6 +3,7 @@ from ml import main
 import pandas as pd
 app = Flask(__name__)
 
+
 @app.route('/')
 def output():
     #return render_template('mlOutput.html',title='flask test',accuracy=test.ml()) #渡す引数
@@ -66,9 +67,9 @@ def null_conv():
             requirements_data[name] = drop_columns[name]
     target = request.form.get("target")
     model = request.form.get('model')
-    n_estimators = request.form.get('n_estimators')
+    test = request.form.get('2')
     accuracy = main.titanic(requirements_data,target,model)
-    return render_template('null_conv.html',title='flask test',radio=radio_data,target=target,accuracy=accuracy,n_estimators=n_estimators)
+    return render_template('null_conv.html',title='flask test',radio=radio_data,target=target,accuracy=accuracy,test=test)
 
 @app.route("/load", methods=["GET"])
 def load():
@@ -82,6 +83,7 @@ def login():
 @app.route("/login_manager", methods=["POST"])  #追加
 def login_manager():
     return "ようこそ、" + request.form.get('select') + "さん"
+
 
 #おまじない
 if __name__ == "__main__":
