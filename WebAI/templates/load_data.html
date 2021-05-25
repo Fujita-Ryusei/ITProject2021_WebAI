@@ -38,22 +38,28 @@
     </div>
 
     <form action="/null_conv" method="POST" enctype="multipart/form-data">
+        <table = border="1">
+
         <option value="target">目的変数</option>
+        <tr>
         {% for name in columns_name %}
-                    {{name}}
-                    <input type="radio" id="r1" name="target" value={{name}}>
+                    <td>{{name}}
+                    <input type="radio" id="r1" name="target" value={{name}}></td>
                     
         {% endfor %}
+        </tr>
         <!-- <p>欠損値の置き換え方法を選んでください</p> -->
         <script>displayRadio();</script>
 
         <option value="drop">削除する変数</option>
+        <tr>
         {% for name in columns_name %}
                     {% set value = name + '_drop' %}
-                    {{name}}
-                    <input type="checkbox" id="r1" name={{value}} value="drop">
+                    <td>{{name}}
+                    <input type="checkbox" id="r1" name={{value}} value="drop"></td>
                     
         {% endfor %}
+        </tr>
         <br>
         <select name="model" id = "model" onchange="radioSelect(this);">
             <option value="">モデルを選択してください</option>
@@ -66,6 +72,7 @@
             </div>
         </label>
     <input type="submit" value="送信">
+        </table>
     </form>
 
     <script>
@@ -93,6 +100,7 @@
         entropy.setAttribute("value","entropy");
         entropy.appendChild(document.createTextNode("entropy"));
         criterion.setAttribute("name","2");
+        criterion.setAttribute("id","testId");
         criterion.appendChild(gini);
         criterion.appendChild(entropy);
         //max_depth
