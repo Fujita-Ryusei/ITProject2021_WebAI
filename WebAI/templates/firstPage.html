@@ -27,8 +27,8 @@
         <input type="submit" value="機械学習開始">
     </form>
     <p>正規化</p>
-    <form action="/load_data" method="POST">
-        <input type="file" name = "data">
+    <form action="/load_data" method="POST" enctype="multipart/form-data">
+        <input type="file" name = "data" accept=".csv">
         <input type="submit" value="送信">
     </form>
 

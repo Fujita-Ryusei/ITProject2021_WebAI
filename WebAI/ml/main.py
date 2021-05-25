@@ -32,8 +32,9 @@ def RFR(x_train,x_test,y_train,y_test):
         return metrics.r2_score(y_test, y_pred)
 
 
-def csv_load(file_name):
-        data = pd.read_csv(file_name)
+def csv_load(file):
+        #file.save('data.csv')
+        data = pd.read_csv('data.csv')
         #original_data = data.drop(data.columns[0],axis = 1)
         data.to_csv('data.csv',index=False)
         return data

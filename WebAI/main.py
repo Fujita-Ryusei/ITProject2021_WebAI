@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from ml import main
+import pandas as pd
 app = Flask(__name__)
 
 @app.route('/')
@@ -31,8 +32,10 @@ def load_data():
     #columns_name = main.conv_data(main.serch_null(main.csv_load(request.form.get('data'))))[0]
     #columns_type = main.conv_data(main.serch_null(main.csv_load(request.form.get('data'))))[1]
     #return render_template('load_data.html',title='flask test',columns_name=columns_name,columns_type=columns_type)
-    columns_nulldata = main.serch_null(main.csv_load(request.form.get('data')))[0]#nullのあるカラムと個数を返す
-    columns_name = main.serch_null(main.csv_load(request.form.get('data')))[1]
+    file = request.files['data']
+    file.save('data.csv')
+    columns_nulldata = main.serch_null(main.csv_load(request.files['data']))[0]#nullのあるカラムと個数を返す
+    columns_name = main.serch_null(main.csv_load(request.files['data']))[1]
     return render_template('load_data.html',title='flask test',columns_name=columns_name,columns_nulldata=columns_nulldata)
 
 @app.route("/null_conv", methods=["POST"])
@@ -61,21 +64,11 @@ def null_conv():
     for name in columns_name:
         if drop_columns[name] == "drop":
             requirements_data[name] = drop_columns[name]
-    
-    
-
-    
-    
-
-    #
-    #for i in columns_nulldata:
-    #    radio_data.append(request.form.get(i))
-    #for i in range(len(columns_nulldata)):
-    #    requirements_data[columns_nulldata[i]] = radio_data[i]
     target = request.form.get("target")
     model = request.form.get('model')
+    n_estimators = request.form.get('n_estimators')
     accuracy = main.titanic(requirements_data,target,model)
-    return render_template('null_conv.html',title='flask test',radio=radio_data,target=target,accuracy=accuracy)
+    return render_template('null_conv.html',title='flask test',radio=radio_data,target=target,accuracy=accuracy,n_estimators=n_estimators)
 
 @app.route("/load", methods=["GET"])
 def load():

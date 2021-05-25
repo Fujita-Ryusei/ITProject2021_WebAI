@@ -51,24 +51,68 @@
         {% for name in columns_name %}
                     {% set value = name + '_drop' %}
                     {{name}}
-                    <input type="radio" id="r1" name={{value}} value="drop">
+                    <input type="checkbox" id="r1" name={{value}} value="drop">
                     
         {% endfor %}
         <br>
-        <select name="model">
+        <select name="model" id = "model" onchange="radioSelect(this);">
+            <option value="">モデルを選択してください</option>
             <option value="RandomForestClassifier" name = "model">RandomForestClassifier</option>
             <option value="RandomForestRegressor" name = "model">RandomForestRegressor</option>
             <!-- <option value="選択肢3" name = "name">選択肢3</option> -->
         </select>
+        <label>モデルパラメータ設定
+            <div id = "parameters_area">
+            </div>
+        </label>
     <input type="submit" value="送信">
     </form>
-    
 
-    <!-- <select name="type">
-        {% for type in columns_type %}
-            <option value="{{ type }}">{{ type }}</option>
-        {% endfor %}
-    </select> -->
+    <script>
+        const parameters_area = document.getElementById('parameters_area');
+
+        // name をモデルで共通にする！
+        // 欠点はモデルのパラメータ名を受け取れなくなるので順番ごとにパラメータを代入する
+        // name は1.2.3とかでやればモデルごとにパラメータの表示数を変えられる
+        // post先でモデルの種類に応じてfor文でrequestをとれる
+        var n_estimators_label = document.createTextNode("n_estimators");
+        var n_estimators = document.createElement("input");
+        n_estimators.setAttribute("name","1");
+        n_estimators.setAttribute("type","number");
+        n_estimators.setAttribute("value","100");
+        n_estimators.setAttribute("max","1000");
+        n_estimators.setAttribute("min","10");
+
+        var input1 = document.createElement('input');
+        input1.setAttribute("id","input1");
+        input1.setAttribute("type","checkbox");
+        input1.setAttribute("value","input1");
+        var label1= document.createTextNode("追加項目1");
+
+        var input2 = document.createElement('input');
+        input2.setAttribute("id","input2");
+        input2.setAttribute("type","checkbox");
+        input2.setAttribute("value","input2");
+        var label2= document.createTextNode("追加項目2");
+        
+        function radioSelect(model){
+            
+            for(let i = parameters_area.childNodes.length -1;i >= 0;i--){
+                parameters_area.removeChild(parameters_area.childNodes[i]);
+            }
+            if(model.value == "RandomForestClassifier"){
+                parameters_area.appendChild(label1);
+                parameters_area.appendChild(input1);
+                parameters_area.appendChild(n_estimators_label);
+                parameters_area.appendChild(n_estimators);
+            }else if(model.value == "RandomForestRegressor"){
+                parameters_area.appendChild(label2);
+                parameters_area.appendChild(input2);
+            }
+            
+        }
+        
+    </script>
 
     
 
