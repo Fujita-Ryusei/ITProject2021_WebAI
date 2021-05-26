@@ -5,6 +5,7 @@ from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense
 import numpy as np
+from sklearn.metrics import mean_squared_error
 from sklearn import model_selection
 from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
@@ -26,10 +27,13 @@ def RFC(x_train,x_test,y_train,y_test):
 
 def RFR(x_train,x_test,y_train,y_test):
         #model = LogisticRegression()
-        model = RandomForestRegressor()
+        model = RandomForestRegressor(max_depth = 50,n_estimators = 250)
         model.fit(x_train,y_train)
         y_pred = model.predict(x_test)
+        #return model.score(y_test, y_pred)
+        #return metrics.mean_absolute_error(y_test, y_pred)
         return metrics.r2_score(y_test, y_pred)
+        #return np.sqrt(mean_squared_error(y_test, y_pred))
 
 
 def csv_load(file):

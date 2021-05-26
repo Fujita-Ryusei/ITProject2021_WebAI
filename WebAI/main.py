@@ -67,7 +67,9 @@ def null_conv():
             requirements_data[name] = drop_columns[name]
     target = request.form.get("target")
     model = request.form.get('model')
-    test = request.form.get('2')
+    test = []
+    for i in range(5):
+        test.append(request.form.get(str(i + 1))); 
     accuracy = main.titanic(requirements_data,target,model)
     return render_template('null_conv.html',title='flask test',radio=radio_data,target=target,accuracy=accuracy,test=test)
 
