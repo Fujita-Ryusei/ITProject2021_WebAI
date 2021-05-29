@@ -13,21 +13,33 @@ from sklearn.metrics import accuracy_score
 from sklearn import metrics
 from collections import defaultdict
 
-def choose_model(x_train,x_test,y_train,y_test,model):
+def choose_model(x_train,x_test,y_train,y_test,model,param):
         if model == "RandomForestClassifier":
-                return RFC(x_train,x_test,y_train,y_test)
+                return RFC(x_train,x_test,y_train,y_test,param)
         elif model == "RandomForestRegressor":
-                return RFR(x_train,x_test,y_train,y_test)
+                return RFR(x_train,x_test,y_train,y_test,param)
 
-def RFC(x_train,x_test,y_train,y_test):
-        model = RandomForestClassifier()
+def param_none(param):
+        if(type(param) is int):
+                return int(param)
+        else:
+                return None
+
+def RFC(x_train,x_test,y_train,y_test,param):
+        model = RandomForestClassifier(
+                n_estimators=int(param[0]),criterion=param[1],max_depth=param_none(param[2]),
+                min_samples_split=int(param[3]),max_leaf_nodes=param_none(param[4])
+                )
         model.fit(x_train,y_train)
         y_pred = model.predict(x_test)
         return accuracy_score(y_test,y_pred)
 
-def RFR(x_train,x_test,y_train,y_test):
+def RFR(x_train,x_test,y_train,y_test,param):
         #model = LogisticRegression()
-        model = RandomForestRegressor(max_depth = 50,n_estimators = 250)
+        model = RandomForestRegressor(
+                n_estimators=int(param[0]),criterion=param[1],max_depth=param_none(param[2]),
+                min_samples_split=int(param[3]),max_leaf_nodes=param_none(param[4])
+                )
         model.fit(x_train,y_train)
         y_pred = model.predict(x_test)
         #return model.score(y_test, y_pred)
@@ -152,7 +164,7 @@ def factorize(data):
 #def ave(data):
 
 
-def titanic(radio_data,target,model):
+def titanic(radio_data,target,model,param):
         #ave mode mean standard drop
         data = pd.read_csv("data.csv")
         columns_list = receive_data()[1]
@@ -185,7 +197,7 @@ def titanic(radio_data,target,model):
 
         #model = RandomForestClassifier()
         #model.fit(x_train,y_train)
-        return choose_model(x_train,x_test,y_train,y_test,model)
+        return choose_model(x_train,x_test,y_train,y_test,model,param)
 
 def titanic_original(data):
         #ave mode mean standard drop

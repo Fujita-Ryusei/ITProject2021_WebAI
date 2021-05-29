@@ -67,11 +67,14 @@ def null_conv():
             requirements_data[name] = drop_columns[name]
     target = request.form.get("target")
     model = request.form.get('model')
-    test = []
+    #完成版ではモデルによってパラメータの数が異なる
+    #modelによってforを分岐させるとかする関数を作る
+    #Noneの対処も何かスマートにできるといいかも
+    param = []
     for i in range(5):
-        test.append(request.form.get(str(i + 1))); 
-    accuracy = main.titanic(requirements_data,target,model)
-    return render_template('null_conv.html',title='flask test',radio=radio_data,target=target,accuracy=accuracy,test=test)
+        param.append(request.form.get(str(i + 1)));
+    accuracy = main.titanic(requirements_data,target,model,param)
+    return render_template('null_conv.html',title='flask test',radio=radio_data,target=target,accuracy=accuracy,param=param)
 
 @app.route("/load", methods=["GET"])
 def load():
