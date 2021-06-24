@@ -5,14 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
-    <title>{{ title }}</title>
+    <title>WebAI</title>
 </head>
-        <div class = "content">
-            {% block content %}
-            <!-- ここにメインコンテンツを書く -->
-            {% endblock %}
-        </div>
-        
-        
 
+    {% block content %}
+    {% endblock %}
+
+        
 </html>
