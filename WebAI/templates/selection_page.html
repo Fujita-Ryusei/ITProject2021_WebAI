@@ -65,6 +65,7 @@
             <option value="">モデルを選択してください</option>
             <option value="RandomForestClassifier" name = "model">RandomForestClassifier</option>
             <option value="RandomForestRegressor" name = "model">RandomForestRegressor</option>
+            <option value="XGBoost" name = "model">XGBoost</option>
             <!-- <option value="選択肢3" name = "name">選択肢3</option> -->
         </select>
         <label>モデルパラメータ設定
@@ -76,7 +77,10 @@
         </table>
     </form>
 
+
     <script>
+
+
         const parameters_area = document.getElementsByClassName("parameters_area")[0];
         //const parameters_area = document.getElementById('parameters_area');
 

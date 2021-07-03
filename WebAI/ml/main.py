@@ -13,12 +13,16 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn import metrics
 from collections import defaultdict
+import xgboost as xgb
+import seaborn as sns
 
 def choose_model(x_train,x_test,y_train,y_test,model,param):
         if model == "RandomForestClassifier":
                 return RFC(x_train,x_test,y_train,y_test,param)
         elif model == "RandomForestRegressor":
                 return RFR(x_train,x_test,y_train,y_test,param)
+        elif model == "XGBoost":
+                return XGB(x_train,x_test,y_train,y_test,param)
 
 def param_none(param):
         if(type(param) is int):
@@ -43,11 +47,24 @@ def RFR(x_train,x_test,y_train,y_test,param):
                 )
         model.fit(x_train,y_train)
         y_pred = model.predict(x_test)
-        #return model.score(y_test, y_pred)
+        #return model.score(x_test,y_test)
         #return metrics.mean_absolute_error(y_test, y_pred)
         return metrics.r2_score(y_test, y_pred)
         #return np.sqrt(mean_squared_error(y_test, y_pred))
 
+def XGB(x_train,x_test,y_train,y_test,param):
+        train = xgb.DMatrix(x_train, label=y_train)
+        param = {'max_depth': 2, 'eta': 1, 'objective': 'multi:softmax', 'num_class': 3}
+        num_round = 10
+        bst = xgb.train(param, train, num_round)
+        test = xgb.DMatrix(x_test)
+        y_pred = bst.predict(test)
+        return accuracy_score(y_test, y_pred)
+        #reg = xgb.XGBRegressor()
+        ##学習過程を表示するための変数を用意
+        #reg.fit(x_train,y_train,eval_set=[(x_train,y_train),(x_test,y_test)])
+        #y_pred = reg.predict(x_test)
+        #return metrics.r2_score(y_test, y_pred)
 
 def csv_load(file):
         #file.save('data.csv')
@@ -55,6 +72,12 @@ def csv_load(file):
         #original_data = data.drop(data.columns[0],axis = 1)
         #data.to_csv('data.csv',index=False)
         return data
+
+def img_test(data):
+        line_plot = sns.barplot(x='Survived', y='Age', data=data)
+        figure = line_plot.get_figure()
+        figure.savefig("static/img/gr.jpg")
+
 
 ######receiveとserchをひとつにする
 
@@ -138,6 +161,7 @@ def factorize(data):
 def ml(radio_data,target,model,param):
         #ave mode mean standard drop
         data = pd.read_csv("data.csv")
+        #img_test(data)
         columns_list = receive_data()[1]
         null_columns = receive_data()[2]
         for colum in columns_list:
