@@ -52,14 +52,24 @@ def RFR(x_train,x_test,y_train,y_test,param):
         return metrics.r2_score(y_test, y_pred)
         #return np.sqrt(mean_squared_error(y_test, y_pred))
 
-def XGB(x_train,x_test,y_train,y_test,param):
+def XGB(x_train,x_test,y_train,y_test,radio_param):
         train = xgb.DMatrix(x_train, label=y_train)
-        param = {'max_depth': 2, 'eta': 1, 'objective': 'multi:softmax', 'num_class': 3}
-        num_round = 10
-        bst = xgb.train(param, train, num_round)
-        test = xgb.DMatrix(x_test)
-        y_pred = bst.predict(test)
-        return accuracy_score(y_test, y_pred)
+        if(radio_param[2] == "reg:linear"):
+                param = {'max_depth': int(radio_param[0]), 'eta': float(radio_param[1]), 'objective': radio_param[2] }
+                num_round = int(radio_param[3])
+                bst = xgb.train(param, train, num_round)
+                test = xgb.DMatrix(x_test)
+                y_pred = bst.predict(test)
+                return metrics.r2_score(y_test, y_pred)
+        elif(radio_param[2] == "multi:softmax"):
+                param = {'max_depth': int(radio_param[0]), 'eta': float(radio_param[1]), 'objective': radio_param[2] , 'num_class': 3}
+                num_round = int(radio_param[3])
+                bst = xgb.train(param, train, num_round)
+                test = xgb.DMatrix(x_test)
+                y_pred = bst.predict(test)
+                return accuracy_score(y_test, y_pred)
+        else:
+                raise Exception("XGBoostのobjectiveの選択に間違いがあります")
         #reg = xgb.XGBRegressor()
         ##学習過程を表示するための変数を用意
         #reg.fit(x_train,y_train,eval_set=[(x_train,y_train),(x_test,y_test)])
@@ -110,8 +120,11 @@ def serch_null(data):
         
 
 def conv_object(data):
-        conv_data,original_data = pd.factorize(data, sort=True)
-        return conv_data
+        try:
+                conv_data,original_data = pd.factorize(data, sort=True)
+                return conv_data
+        except Exception as e:
+                raise Exception("Objectを変換できませんでした")
 
 
 def conv_float(data):
