@@ -1,42 +1,95 @@
 
+from io import TextIOWrapper
 import pandas as pd
 import keras
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense
 import numpy as np
+from sklearn.metrics import mean_squared_error
 from sklearn import model_selection
 from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn import metrics
 from collections import defaultdict
+import xgboost as xgb
+import seaborn as sns
 
-def choose_model(x_train,x_test,y_train,y_test,model):
+def choose_model(x_train,x_test,y_train,y_test,model,param):
         if model == "RandomForestClassifier":
-                return RFC(x_train,x_test,y_train,y_test)
+                return RFC(x_train,x_test,y_train,y_test,param)
         elif model == "RandomForestRegressor":
-                return RFR(x_train,x_test,y_train,y_test)
+                return RFR(x_train,x_test,y_train,y_test,param)
+        elif model == "XGBoost":
+                return XGB(x_train,x_test,y_train,y_test,param)
 
-def RFC(x_train,x_test,y_train,y_test):
-        model = RandomForestClassifier()
+def param_none(param):
+        if(type(param) is int):
+                return int(param)
+        else:
+                return None
+
+def RFC(x_train,x_test,y_train,y_test,param):
+        model = RandomForestClassifier(
+                n_estimators=int(param[0]),criterion=param[1],max_depth=param_none(param[2]),
+                min_samples_split=int(param[3]),max_leaf_nodes=param_none(param[4])
+                )
         model.fit(x_train,y_train)
         y_pred = model.predict(x_test)
         return accuracy_score(y_test,y_pred)
 
-def RFR(x_train,x_test,y_train,y_test):
+def RFR(x_train,x_test,y_train,y_test,param):
         #model = LogisticRegression()
-        model = RandomForestRegressor()
+        model = RandomForestRegressor(
+                n_estimators=int(param[0]),criterion=param[1],max_depth=param_none(param[2]),
+                min_samples_split=int(param[3]),max_leaf_nodes=param_none(param[4])
+                )
         model.fit(x_train,y_train)
         y_pred = model.predict(x_test)
+        #return model.score(x_test,y_test)
+        #return metrics.mean_absolute_error(y_test, y_pred)
         return metrics.r2_score(y_test, y_pred)
+        #return np.sqrt(mean_squared_error(y_test, y_pred))
 
+def XGB(x_train,x_test,y_train,y_test,radio_param):
+        train = xgb.DMatrix(x_train, label=y_train)
+        if(radio_param[2] == "reg:linear"):
+                param = {'max_depth': int(radio_param[0]), 'eta': float(radio_param[1]), 'objective': radio_param[2] }
+                num_round = int(radio_param[3])
+                bst = xgb.train(param, train, num_round)
+                test = xgb.DMatrix(x_test)
+                y_pred = bst.predict(test)
+                return metrics.r2_score(y_test, y_pred)
+        elif(radio_param[2] == "multi:softmax"):
+                param = {'max_depth': int(radio_param[0]), 'eta': float(radio_param[1]), 'objective': radio_param[2] , 'num_class': 3}
+                num_round = int(radio_param[3])
+                bst = xgb.train(param, train, num_round)
+                test = xgb.DMatrix(x_test)
+                y_pred = bst.predict(test)
+                return accuracy_score(y_test, y_pred)
+        else:
+                raise Exception("XGBoostのobjectiveの選択に間違いがあります")
+        #reg = xgb.XGBRegressor()
+        ##学習過程を表示するための変数を用意
+        #reg.fit(x_train,y_train,eval_set=[(x_train,y_train),(x_test,y_test)])
+        #y_pred = reg.predict(x_test)
+        #return metrics.r2_score(y_test, y_pred)
 
-def csv_load(file_name):
-        data = pd.read_csv(file_name)
+def csv_load(file):
+        #file.save('data.csv')
+        data = pd.read_csv('data.csv')
         #original_data = data.drop(data.columns[0],axis = 1)
-        data.to_csv('data.csv',index=False)
+        #data.to_csv('data.csv',index=False)
         return data
+
+def img_test(data):
+        line_plot = sns.barplot(x='Survived', y='Age', data=data)
+        figure = line_plot.get_figure()
+        figure.savefig("static/img/gr.jpg")
+
+
+######receiveとserchをひとつにする
 
 def receive_data():
         data = pd.read_csv('data.csv')
@@ -67,8 +120,11 @@ def serch_null(data):
         
 
 def conv_object(data):
-        conv_data,original_data = pd.factorize(data, sort=True)
-        return conv_data
+        try:
+                conv_data,original_data = pd.factorize(data, sort=True)
+                return conv_data
+        except Exception as e:
+                raise Exception("Objectを変換できませんでした")
 
 
 def conv_float(data):
@@ -107,49 +163,18 @@ def standard(data):
   return data.fillna(np.random.randint(data_ave - data_std, data_ave + data_std))
 
 
-def ml():
-    batch_size =64
-    n_classes = 10
-
-    (X_train,y_train),(X_test,y_test) = mnist.load_data()
-
-    X_train = X_train.reshape(60000,784)
-    X_test = X_test.reshape(10000,784)
-    X_train = X_train.astype(np.float32)/255
-    X_test = X_test.astype(np.float32)/255
-    y_train = keras.utils.to_categorical(y_train, n_classes)
-
-    y_test = keras.utils.to_categorical(y_test, n_classes)
-
-    model = Sequential()
-    model.add(Dense(50, activation='relu', input_shape=(784,)))
-    model.add(Dense(50, activation='relu'))
-    model.add(Dense(50, activation='relu'))
-    model.add(Dense(n_classes, activation='softmax'))
-    model.compile(loss='categorical_crossentropy',
-                optimizer='adam',
-                metrics=['accuracy'])
-    model.fit(X_train, y_train, batch_size=batch_size,
-            epochs=5,
-            verbose=1,
-            validation_split=0.1)
-
-    score = model.evaluate(X_test, y_test, batch_size=batch_size)
-
-    #print('Test accuracy:', score[1])
-    return list(score)
 
 def factorize(data):
         if data.dtype == 'object':
                 data, uniques = pd.factorize(data)
         return data
 
-#def ave(data):
 
 
-def titanic(radio_data,target,model):
+def ml(radio_data,target,model,param):
         #ave mode mean standard drop
         data = pd.read_csv("data.csv")
+        #img_test(data)
         columns_list = receive_data()[1]
         null_columns = receive_data()[2]
         for colum in columns_list:
@@ -169,62 +194,20 @@ def titanic(radio_data,target,model):
         
         for colum in columns_list:
                 data[colum] = factorize(data[colum])
-                if radio_data[colum] == "drop":
+                if radio_data[colum] == "drop" and colum != target:
                         data.drop(colum,axis=1,inplace=True)
         
-        data.to_csv('data.csv',index=False)
+        #data.to_csv('data.csv',index=False)
 
         target_data = data[target]
         train_data = data.drop(target, axis = 1)
+
+        
+
         x_train,x_test,y_train,y_test = model_selection.train_test_split(train_data,target_data,test_size = 0.2)
 
         #model = RandomForestClassifier()
         #model.fit(x_train,y_train)
-        return choose_model(x_train,x_test,y_train,y_test,model)
+        return choose_model(x_train,x_test,y_train,y_test,model,param)
 
-def titanic_original(data):
-        #ave mode mean standard drop
-        data = pd.read_csv("data.csv")
-        #null_columns = receive_data()[2]
-        #for colum in receive_data()[1]:
-        #        for null_column in null_columns:
-        #                if data[colum] == data[null_column] :
-        #                        if null_data[null_column] == "ave" :
-        #                                data[null_column] = ave(data[null_column])
-        #                        elif null_data[null_column] == "mode":
-        #                                data[null_column] = mode(data[null_column])
-        #                        elif null_data[null_column] == "med":
-        #                                data[null_column] = mean(data[null_column])
-        #                        elif null_data[null_column] == "standard":
-        #                                data[null_column] = standard(data[null_column])
-        #                        elif null_data[null_column] == "drop":
-        #                                data.drop(null_column)
 
-                                
-        data['Sex'].replace(['male','female'], [0, 1], inplace=True)
-
-        data['Embarked'].fillna(('S'), inplace=True)
-        data['Embarked'] = data['Embarked'].map( {'S': 0, 'C': 1, 'Q': 2} ).astype(int)
-
-        data['Fare'].fillna(np.mean(data['Fare']), inplace=True)
-
-        age_avg = data['Age'].mean()
-        age_std = data['Age'].std()
-        data['Age'].fillna(np.random.randint(age_avg - age_std, age_avg + age_std), inplace=True)
-
-        delete_columns = ['Name', 'PassengerId', 'SibSp', 'Parch', 'Ticket', 'Cabin']
-        data.drop(delete_columns, axis=1, inplace=True)
-
-        #train = data[:len(train)]
-        #test = data[len(train):]
-
-        data = data.astype('int')
-
-        target_data = data['Survived']
-        train_data = data.drop('Survived', axis = 1)
-        x_train,x_test,y_train,y_test = model_selection.train_test_split(train_data,target_data,test_size = 0.2)
-
-        model = RandomForestClassifier(n_estimators=20,max_depth=35,criterion='entropy',warm_start=True)
-        model.fit(x_train,y_train)
-        y_pred = model.predict(x_test)
-        return accuracy_score(y_test,y_pred)
