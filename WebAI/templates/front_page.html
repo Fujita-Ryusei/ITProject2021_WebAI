@@ -1,0 +1,14 @@
+{% extends "index.html" %}
+{% block content %}
+<body class="text-center">
+
+
+    <p>CSVを選択してください</p>
+    <form action="/selection_page" method="POST" enctype="multipart/form-data">
+        <input type="file" name = "data" accept=".csv">
+        <input type="submit" value="送信">
+    </form>
+
+
+</body>
+{% endblock %}

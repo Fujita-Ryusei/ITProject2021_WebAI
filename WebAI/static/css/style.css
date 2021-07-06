@@ -1,0 +1,24 @@
+body{
+    margin: 5rem;
+    background-color: white;
+}
+
+#wrapp{
+    background-color: #F2F2F2;
+}
+
+.select_group{
+    background-color: #f2f2f2;
+    display: inline-block;
+}
+
+.variable_obj{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1%;
+}
+
+.variable_losses{
+    display: flex;
+    flex-direction: row;
+}
