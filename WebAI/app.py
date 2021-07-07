@@ -21,19 +21,22 @@ def load_data():
     #columns_name = main.conv_data(main.serch_null(main.csv_load(request.form.get('data'))))[0]
     #columns_type = main.conv_data(main.serch_null(main.csv_load(request.form.get('data'))))[1]
     #return render_template('load_data.html',title='flask test',columns_name=columns_name,columns_type=columns_type)
-    try:
+    #try:
 
         #img = Image.open("test.jpg")
 
-        file = request.files['data']
-        file.save('data.csv')
-        columns_nulldata = main.serch_null(main.csv_load(request.files['data']))[0]#nullのあるカラムと個数を返す
-        columns_name = main.serch_null(main.csv_load(request.files['data']))[1]
-        #columns_nulldata = main.receive_data()[2]
-        #columns_name = main.receive_data()[1]
-        return render_template('selection_page.html',columns_name=columns_name,columns_nulldata=columns_nulldata)
-    except Exception as e:
-        return render_template("front_page.html")
+    file = request.files['data']
+    file.save('data.csv')
+    columns_nulldata = main.serch_null(main.csv_load(request.files['data']))[0]#nullのあるカラムと個数を返す
+    columns_name = main.serch_null(main.csv_load(request.files['data']))[1]
+    #columns_nulldata = main.receive_data()[2]
+    #columns_name = main.receive_data()[1]
+    #for key in columns_nulldata.keys():
+    #    
+    #    print(columns_nulldata[key])
+    return render_template('selection_page.html',columns_name=columns_name,columns_nulldata=dict(columns_nulldata))
+    #except Exception as e:
+    #    return render_template("front_page.html")
 
 @app.route("/result_page", methods=["POST"])
 def null_conv():

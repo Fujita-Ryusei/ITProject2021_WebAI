@@ -8,8 +8,10 @@
 
         <!-- エラーメッセージ    -->
         <p style="color: red;">{{ detail_error }}</p>
-    
+
     <script>
+    
+    
         function displayRadio(){
         {% for key, value in columns_nulldata.items() %}
             
@@ -18,7 +20,7 @@
                     '<td>' + '<option value="{{ key }}">' + '{{ key }}:{{ value[0] }}' + '</option>' + '</td>' +
                     '<td>' + '最頻値' + '<input type="radio" id="r1" name={{ key }} value="mode">' + '</td>' +
                     '<td>' + '中央値' + '<input type="radio" id="r1" name={{ key }} value="med">' + '</td>' +
-                    '<td>' + '削除' + '<input type="radio" id="r1" name={{ key }} value="drop">' + '</td>' + 
+                    '<td>' + '削除' + '<input type="radio" id="r1" name={{ key }} value="drop">' + '</td>' +
                     '</tr>');
              }else{
                 document.write('<tr>' + 
@@ -35,6 +37,7 @@
             
             {% endfor %}
         }
+
     </script>
     
     </div>
@@ -47,18 +50,35 @@
         {% for name in columns_name %}
                     <td>{{name}}
                     <input type="radio" id="r1" name="target" value={{name}}></td>
+                    <script>
+                        var count = {{ loop.index }};
+                        if(count % 5 == 0){
+                            document.write('</tr><tr>');
+                        }
+                    </script>
                     
         {% endfor %}
         </tr>
         <!-- <p>欠損値の置き換え方法を選んでください</p> -->
-        <script>displayRadio();</script>
+
+            <script> //tojasonとnumpyの相性が悪い！
+                
+                displayRadio();
+            </script>
+
 
         <tr><td><option value="drop">削除する変数</option></td></tr>
         <tr>
         {% for name in columns_name %}
                     {% set value = name + '_drop' %}
-                    <td>{{name}}
+                    <td>{{name}} 
                     <input type="checkbox" id="r1" name={{value}} value="drop"></td>
+                    <script>
+                        var count = {{ loop.index }};
+                        if(count % 5 == 0){
+                            document.write('</tr><tr>');
+                        }
+                    </script>
                     
         {% endfor %}
         </tr>
@@ -81,6 +101,7 @@
 
 
     <script type="text/javascript" src="../static/js/model_radio_select.js"></script>
+    <script type="text/javascript" src="../static/js/display_radio.js"></script>
 
 </body>
 {% endblock %}
