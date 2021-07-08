@@ -16,22 +16,23 @@
         {% for key, value in columns_nulldata.items() %}
             
             if('{{value[1]}}' == 'object'){
-                document.write('<tr>' + 
-                    '<td>' + '<option value="{{ key }}">' + '{{ key }}:{{ value[0] }}' + '</option>' + '</td>' +
-                    '<td>' + '最頻値' + '<input type="radio" id="r1" name={{ key }} value="mode">' + '</td>' +
-                    '<td>' + '中央値' + '<input type="radio" id="r1" name={{ key }} value="med">' + '</td>' +
-                    '<td>' + '削除' + '<input type="radio" id="r1" name={{ key }} value="drop">' + '</td>' +
-                    '</tr>');
+                document.write(
+                    '<option value="{{ key }}">' + '{{ key }}:{{ value[0] }}' + '</option>' +
+                    '最頻値' + '<input type="radio" id="r1" name={{ key }} value="mode">' +
+                    '中央値' + '<input type="radio" id="r1" name={{ key }} value="med">' +
+                    '削除' + '<input type="radio" id="r1" name={{ key }} value="drop">'
+                    );
              }else{
-                document.write('<tr>' + 
-                    '<td>' + '<option value="{{ key }}">' + '{{ key }}:{{ value[0] }}' + '</option>' + '</td>' +
-                    '<td>' + '平均値' + '<input type="radio" id="r1" name={{ key }} value="ave">' + '</td>' +
-                    '<td>' + '最頻値' + '<input type="radio" id="r1" name={{ key }} value="mode">' + '</td>' +
-                    '<td>' + '中央値' + '<input type="radio" id="r1" name={{ key }} value="med">' + '</td>' +
-                    '<td>' + '標準偏差' + '<input type="radio" id="r1" name={{ key }} value="standard">' + '</td>' +
-                    '<td>' + '削除' + '<input type="radio" id="r1" name={{ key }} value="drop">' + '</td>' +
-                    '</tr>');
+                document.write(
+                    '<option value="{{ key }}">' + '{{ key }}:{{ value[0] }}' + '</option>' +
+                    '平均値' + '<input type="radio" id="r1" name={{ key }} value="ave">' +
+                    '最頻値' + '<input type="radio" id="r1" name={{ key }} value="mode">' +
+                    '中央値' + '<input type="radio" id="r1" name={{ key }} value="med">' +
+                    '標準偏差' + '<input type="radio" id="r1" name={{ key }} value="standard">' +
+                    '削除' + '<input type="radio" id="r1" name={{ key }} value="drop">'
+                    );
              }
+             
 
              
             
@@ -45,21 +46,21 @@
     <form action="/result_page" method="POST" enctype="multipart/form-data">
         <table = border="1">
 
-        <tr><td><option value="target">目的変数</option></td></tr>
-        <tr>
+        <p><option value="target">目的変数</option></p>
+        
         {% for name in columns_name %}
-                    <td>{{name}}
-                    <input type="radio" id="r1" name="target" value={{name}}></td>
+                    {{name}}
+                    <input type="radio" id="r1" name="target" value={{name}}>
                     <script>
                         var count = {{ loop.index }};
                         if(count % 5 == 0){
-                            document.write('</tr><tr>');
+                            document.write('<br>');
                         }
                     </script>
                     
         {% endfor %}
-        </tr>
-        <!-- <p>欠損値の置き換え方法を選んでください</p> -->
+        
+        <p>欠損値の置き換え方法を選んでください</p>
 
             <script> //tojasonとnumpyの相性が悪い！
                 
@@ -67,21 +68,21 @@
             </script>
 
 
-        <tr><td><option value="drop">削除する変数</option></td></tr>
-        <tr>
+        <p><option value="drop">削除する変数</option></p>
+        
         {% for name in columns_name %}
                     {% set value = name + '_drop' %}
-                    <td>{{name}} 
-                    <input type="checkbox" id="r1" name={{value}} value="drop"></td>
+                    {{name}} 
+                    <input type="checkbox" id="r1" name={{value}} value="drop">
                     <script>
                         var count = {{ loop.index }};
                         if(count % 5 == 0){
-                            document.write('</tr><tr>');
+                            document.write('<br>');
                         }
                     </script>
                     
         {% endfor %}
-        </tr>
+        
         <br>
         <select name="model" id = "model" onchange="radioSelect(this);">
             <option value="">モデルを選択してください</option>
@@ -91,9 +92,9 @@
             <!-- <option value="選択肢3" name = "name">選択肢3</option> -->
         </select>
         <label>モデルパラメータ設定
-            <tr class = "parameters_area" >
+            <div class = "parameters_area" >
 
-            </tr>
+            </div>
         </label>
     <input type="submit" value="送信">
         </table>
