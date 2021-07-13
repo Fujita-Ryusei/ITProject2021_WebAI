@@ -1,108 +1,81 @@
 {% extends "index.html" %}
 {% block content %}
-
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
 
 <body>
-
     <div id="wrap">
-
         <!-- エラーメッセージ    -->
         <p style="color: red;">{{ detail_error }}</p>
-
-    <script>
-    
-    
+        <script>
         function displayRadio(){
         {% for key, value in columns_nulldata.items() %}
             
             if('{{value[1]}}' == 'object'){
-                document.write(
-                    '<option value="{{ key }}">' + '{{ key }}:{{ value[0] }}' + '</option>' +
-                    '最頻値' + '<input type="radio" id="r1" name={{ key }} value="mode">' +
-                    '中央値' + '<input type="radio" id="r1" name={{ key }} value="med">' +
-                    '削除' + '<input type="radio" id="r1" name={{ key }} value="drop">'
-                    );
+                document.write('' + 
+                    '' + '<option value="{{ key }}">' + '{{ key }}:{{ value[0] }}' + '</option>' + '' +
+                    '' + '最頻値' + '<input type="radio" id="r1" name={{ key }} value="mode">' + '' +
+                    '' + '中央値' + '<input type="radio" id="r1" name={{ key }} value="med">' + '' +
+                    '' + '削除' + '<input type="radio" id="r1" name={{ key }} value="drop">' + '' + 
+                    '');
              }else{
-                document.write(
-                    '<option value="{{ key }}">' + '{{ key }}:{{ value[0] }}' + '</option>' +
-                    '平均値' + '<input type="radio" id="r1" name={{ key }} value="ave">' +
-                    '最頻値' + '<input type="radio" id="r1" name={{ key }} value="mode">' +
-                    '中央値' + '<input type="radio" id="r1" name={{ key }} value="med">' +
-                    '標準偏差' + '<input type="radio" id="r1" name={{ key }} value="standard">' +
-                    '削除' + '<input type="radio" id="r1" name={{ key }} value="drop">'
-                    );
+                document.write('' + 
+                    '' + '<option value="{{ key }}">' + '{{ key }}:{{ value[0] }}' + '</option>' + '' +
+                    '' + '平均値' + '<input type="radio" id="r1" name={{ key }} value="ave">' + '' +
+                    '' + '最頻値' + '<input type="radio" id="r1" name={{ key }} value="mode">' + '' +
+                    '' + '中央値' + '<input type="radio" id="r1" name={{ key }} value="med">' + '' +
+                    '' + '標準偏差' + '<input type="radio" id="r1" name={{ key }} value="standard">' + '' +
+                    '' + '削除' + '<input type="radio" id="r1" name={{ key }} value="drop">' + '' +
+                    '');
              }
-             
-
-             
-            
             {% endfor %}
         }
-
-    </script>
-    
+        </script>
     </div>
 
     <form action="/result_page" method="POST" enctype="multipart/form-data">
-        <table = border="1">
-
-        <p><option value="target">目的変数</option></p>
-        
-        {% for name in columns_name %}
-                    {{name}}
-                    <input type="radio" id="r1" name="target" value={{name}}>
-                    <script>
-                        var count = {{ loop.index }};
-                        if(count % 5 == 0){
-                            document.write('<br>');
-                        }
-                    </script>
-                    
-        {% endfor %}
-        
-        <p>欠損値の置き換え方法を選んでください</p>
-
-            <script> //tojasonとnumpyの相性が悪い！
-                
-                displayRadio();
-            </script>
-
-
-        <p><option value="drop">削除する変数</option></p>
-        
-        {% for name in columns_name %}
-                    {% set value = name + '_drop' %}
-                    {{name}} 
-                    <input type="checkbox" id="r1" name={{value}} value="drop">
-                    <script>
-                        var count = {{ loop.index }};
-                        if(count % 5 == 0){
-                            document.write('<br>');
-                        }
-                    </script>
-                    
-        {% endfor %}
-        
-        <br>
-        <select name="model" id = "model" onchange="radioSelect(this);">
-            <option value="">モデルを選択してください</option>
-            <option value="RandomForestClassifier" name = "model">RandomForestClassifier</option>
-            <option value="RandomForestRegressor" name = "model">RandomForestRegressor</option>
-            <option value="XGBoost" name = "model">XGBoost</option>
-            <!-- <option value="選択肢3" name = "name">選択肢3</option> -->
-        </select>
-        <label>モデルパラメータ設定
-            <div class = "parameters_area" >
-
+        <div class="select_group">
+            <div class="block1">
+                <option value="target">目的変数</option>
+                <div class="variable_obj">
+                    {% for name in columns_name %}
+                        <div class="variable_obj_row">{{name}}</div><!--目的変数の表示。-->
+                        <input type="radio" id="r1" name="target" value={{name}}>
+                    {% endfor %}
+                </div>    
+                <!-- <p>欠損値の置き換え方法を選んでください</p> -->
+                <div class="variable_rep"><script>displayRadio();</script></div>
+            </div> 
+            <div class="block2">
+                <option value="drop">削除する変数</option>
+                <div class="variable_losses">
+                    {% for name in columns_name %}
+                        <div class="variable_rep_row"></div>{% set value = name + '_drop' %}<!--代表値の表示-->
+                        <div class="variable_delete_row">{{name}}</div><!--削除変数の表示-->
+                        <input type="checkbox" id="r1" name={{value}} value="drop">
+                    {% endfor %}
+                </div>
             </div>
-        </label>
-    <input type="submit" value="送信">
-        </table>
+            <div class="block3">
+                <select name="model" id = "model" onchange="radioSelect(this);">
+                <option value="">モデルを選択してください</option>
+                <option value="RandomForestClassifier" name = "model">RandomForestClassifier</option>
+                <option value="RandomForestRegressor" name = "model">RandomForestRegressor</option>
+                <option value="XGBoost" name = "model">XGBoost</option>
+                <!-- <option value="選択肢3" name = "name">選択肢3</option> -->
+                </select>
+                <label>モデルパラメータ設定
+                    <div class = "parameters_area"></div>                
+                </label>
+            </div>
+            <input type="submit" value="送信">
+        </div>
     </form>
-
-
     <script type="text/javascript" src="../static/js/model_radio_select.js"></script>
-    <script type="text/javascript" src="../static/js/display_radio.js"></script>
-
 </body>
+</html>
 {% endblock %}

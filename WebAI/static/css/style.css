@@ -1,0 +1,31 @@
+body{
+    background-color: white;
+    flex-direction: row;
+}
+
+.select_group{
+    /* display: flex;
+    flex-direction: row; */
+}
+
+.block1,.block2,.block3{
+    background-color: #f2f2f2;
+    width: fit-content;
+}
+
+.variable_rep{
+    display: flex;
+    flex-direction: row;
+}
+
+.variable_obj{
+    display: flex;
+    flex-direction: row;
+}
+
+.variable_losses{
+    display: flex;
+    flex-direction: row;
+}
+
+
